@@ -59,18 +59,15 @@ export function MarketPulse() {
 
   return (
     <section aria-label="Market pulse" className="border-b border-line bg-surface">
-      <div className="mx-auto max-w-content px-5 pt-8 sm:px-8 lg:px-12">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-medium">Market pulse</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            {etfSession && <Chip>{etfSession}</Chip>}
-            {newest && (
-              <span className="text-xs text-muted tabular-nums">
-                as of {formatTime(newest)} · {formatAgo(newest)}
-              </span>
-            )}
-            <StatusStrip />
-          </div>
+      <div className="mx-auto max-w-content px-5 pt-6 sm:px-8 lg:px-12">
+        <div className="flex flex-wrap items-center gap-2">
+          {etfSession && <Chip>{etfSession}</Chip>}
+          {newest && (
+            <span className="text-xs text-muted tabular-nums">
+              as of {formatTime(newest)} · {formatAgo(newest)}
+            </span>
+          )}
+          <StatusStrip />
         </div>
       </div>
 
