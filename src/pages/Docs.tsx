@@ -212,10 +212,10 @@ export function Docs() {
           <Section n={7} id="agent" title="Agent">
             <p>
               <strong className="font-medium text-ink">Agent</strong> turns verified data into
-              plain-language context. Today it computes watchlist concentration by category (live),
-              the largest tracked market move of the day (live), and states plainly what it cannot
-              compute yet — owned-exposure concentration and overlap — until verified balances
-              exist. It never presents watchlist data as owned exposure.
+              plain-language context. Today it computes the largest tracked market move of the day
+              (live); the landing page shows a clearly labeled scripted chat illustration. It states
+              plainly what it cannot compute yet — owned-exposure concentration and overlap — until
+              verified balances exist. It never presents watchlist data as owned exposure.
             </p>
           </Section>
 

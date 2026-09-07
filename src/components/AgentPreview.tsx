@@ -1,87 +1,100 @@
-import { useMarket } from '../data/MarketProvider';
-import { useWatchlist } from '../data/useWatchlist';
-import { concentration, biggestMove } from '../lib/agent';
-import { formatPct } from '../lib/format';
+import { useEffect, useState } from 'react';
 import { Chip } from './Chip';
 
-const EXAMPLE_WATCH = ['spy', 'qqq', 'xle'];
+type Step = 'question' | 'typing' | 'answer';
+
+/** How long each loop state holds before advancing. */
+const STEP_MS: Record<Step, number> = { question: 1400, typing: 1500, answer: 5200 };
 
 /**
- * Kovra Agent preview. Deterministic arithmetic only — no invented holdings,
- * news, confidence scores, or claims about the visitor's positions.
+ * Kovra Agent preview: a scripted, illustrative chat loop. No model is wired
+ * up and the copy makes no data claims. Reduced-motion users see the finished
+ * conversation, no loop.
  */
 export function AgentPreview() {
-  const { instruments, quotes } = useMarket();
-  const { ids } = useWatchlist();
+  const [reduced] = useState(
+    () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  const [step, setStep] = useState<Step>(() => (reduced ? 'answer' : 'question'));
+  // Bumped on loop reset so the question bubble remounts and its fade-in replays.
+  const [cycle, setCycle] = useState(0);
 
-  const usingExample = ids.length === 0;
-  const sourceIds = usingExample ? EXAMPLE_WATCH : ids;
-  const shares = concentration(sourceIds, instruments);
-  const watchedCount = sourceIds.filter((id) => instruments.some((i) => i.id === id)).length;
-  const move = biggestMove(quotes, instruments);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setTimeout(() => {
+      if (step === 'answer') {
+        setCycle((c) => c + 1);
+        setStep('question');
+      } else {
+        setStep(step === 'question' ? 'typing' : 'answer');
+      }
+    }, STEP_MS[step]);
+    return () => clearTimeout(t);
+  }, [step, reduced]);
 
   return (
-    <section aria-labelledby="agent-heading" className="rounded-panel border border-line bg-surface p-5">
+    <section
+      aria-labelledby="agent-heading"
+      className="rounded-panel border border-line bg-surface p-5 shadow-[0_18px_44px_-20px_rgba(20,23,19,0.35)] transition-transform duration-300 hover:-translate-y-0.5"
+    >
       <div className="flex flex-wrap items-center gap-2">
         <h3 id="agent-heading" className="font-medium">
           Kovra Agent
         </h3>
-        <Chip>Preview</Chip>
+        <Chip>Illustration</Chip>
       </div>
       <p className="mt-1 text-xs text-muted">
-        Deterministic analysis of the tracked universe — an autonomous agent is not yet integrated.
+        A scripted preview of the assistant — an autonomous agent is not yet integrated.
       </p>
 
-      <div className="mt-4 rounded-control bg-page p-4">
-        <div className="flex items-center gap-2">
-          <h4 className="text-sm font-medium">Watchlist concentration</h4>
-          {usingExample && <Chip tone="warn">Example</Chip>}
+      <div className="mt-4 space-y-3 rounded-control border border-line bg-page p-4">
+        <div
+          key={cycle}
+          className="fade-in ml-auto max-w-[85%] rounded-control bg-ink px-3 py-2 text-sm text-page"
+        >
+          What moved in my watchlist today?
         </div>
-        {shares.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">
-            Watch instruments to see their category mix. In this example, watching SPY, QQQ, and XLE
-            would mix broad market, technology, and energy exposure evenly.
-          </p>
-        ) : (
-          <>
-            <p className="mt-2 text-sm leading-relaxed text-muted">
-              {usingExample ? 'Hypothetical mix' : 'Your watched instruments'} span{' '}
-              {shares.length} {shares.length === 1 ? 'category' : 'categories'} across{' '}
-              {watchedCount} watched {watchedCount === 1 ? 'instrument' : 'instruments'}:
+
+        {step === 'typing' && (
+          <div className="fade-in flex items-center gap-2">
+            <Avatar />
+            <div className="flex gap-1 rounded-control border border-line bg-surface px-3 py-2.5">
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted" />
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted" />
+              <span className="typing-dot h-1.5 w-1.5 rounded-full bg-muted" />
+            </div>
+          </div>
+        )}
+
+        {step === 'answer' && (
+          <div className="fade-in flex items-end gap-2">
+            <Avatar />
+            <p className="max-w-[85%] rounded-control border border-line bg-surface px-3 py-2 text-sm leading-relaxed text-muted">
+              Here's the day across your tracked universe — biggest movers, category mix, and unusual
+              changes. Ask a follow-up any time.
             </p>
-            <ul className="mt-2 space-y-1.5">
-              {shares.map(({ category, count, pct }) => (
-                <li key={category} className="flex items-center gap-3 text-sm">
-                  <span className="w-28 shrink-0 truncate text-muted">{category}</span>
-                  <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-line" aria-hidden="true">
-                    <span
-                      className="block h-full rounded-full bg-ink"
-                      style={{ width: `${Math.max(4, pct)}%` }}
-                    />
-                  </span>
-                  <span className="tabular-nums w-24 shrink-0 text-right text-muted">
-                    {pct}% ({count})
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </>
+          </div>
         )}
       </div>
 
-      <div className="mt-3 rounded-control bg-page p-4">
-        <h4 className="text-sm font-medium">Notable move</h4>
-        {move ? (
-          <p className="mt-2 text-sm leading-relaxed text-muted">
-            Among {instruments.length} tracked instruments, {move.instrument.symbol} moved most today (
-            {formatPct(move.changePct)}). This is a market observation, not a recommendation.
-          </p>
-        ) : (
-          <p className="mt-2 text-sm text-muted">
-            Notable moves appear once quote data is available.
-          </p>
-        )}
+      {/* Decorative input — the preview card is not interactive. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none mt-3 flex items-center justify-between rounded-control border border-line bg-surface px-3 py-2 text-sm text-muted"
+      >
+        <span>Ask the agent…</span>
+        <span aria-hidden="true" className="text-ink">
+          ↑
+        </span>
       </div>
     </section>
+  );
+}
+
+function Avatar() {
+  return (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-[10px] font-semibold text-page">
+      K
+    </span>
   );
 }
