@@ -1,0 +1,215 @@
+@import 'tailwindcss';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+
+/* style.md tokens, verbatim values */
+:root {
+  --page: #fafbf7;
+  --surface: #ffffff;
+  --ink: #141713;
+  --muted: #62685e;
+  --line: #e2e6dc;
+  --accent: #ccff00;
+  --accent-soft: #f1fad5;
+  --positive: #17763c;
+  --negative: #b33d3d;
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --content-max: 1280px;
+}
+
+@theme {
+  --color-page: #fafbf7;
+  --color-surface: #ffffff;
+  --color-ink: #141713;
+  --color-muted: #62685e;
+  --color-line: #e2e6dc;
+  --color-accent: #ccff00;
+  --color-accent-soft: #f1fad5;
+  --color-positive: #17763c;
+  --color-negative: #b33d3d;
+
+  --radius-control: 6px;
+  --radius-panel: 8px;
+
+  --container-content: 1280px;
+
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--page);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Visible focus for keyboard users on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* Prices and numeric columns: digits must not shift. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Real-movement highlight only — applied by PriceCell when a source price changes. */
+@keyframes flash-up {
+  from {
+    background-color: color-mix(in srgb, var(--positive) 14%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-down {
+  from {
+    background-color: color-mix(in srgb, var(--negative) 14%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.flash-up {
+  animation: flash-up 500ms ease-out;
+}
+
+.flash-down {
+  animation: flash-down 500ms ease-out;
+}
+
+/* Soft entrance for pages/state swaps (wallet flow). The reduced-motion block
+   below already neuters this for users who ask for less motion. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade-in {
+  animation: fade-in 280ms ease-out both;
+}
+
+/* Scroll-reveal (components/Reveal.tsx): hidden until IntersectionObserver
+   adds .reveal-shown. The reduced-motion block below makes it a no-op. */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+}
+
+.reveal-shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-shown {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .flash-up,
+  .flash-down {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Eyebrow: modest tracking, tiny, never a paragraph. */
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Horizontal tab scroller on mobile without page-level overflow. */
+.tab-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ticker tape (components/MarketPulse): the strip is rendered twice inside a
+   w-max track; translating the track -50% loops seamlessly. Hover or keyboard
+   focus pauses it. Reduced motion: no animation, duplicate copy hidden, and
+   the container becomes a plain horizontal scroller. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll var(--ticker-duration, 60s) linear infinite;
+}
+
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ticker::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ticker-track {
+    animation: none;
+  }
+
+  .ticker-copy {
+    display: none;
+  }
+}
