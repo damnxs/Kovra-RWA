@@ -11,18 +11,20 @@ function rateLimited(status: { rateLimitedUntil: string | null } | null): boolea
  * rate limit, auth, connection. "Live" is never shown — the client refreshes
  * on a 60-second cycle by design.
  */
-export function StatusStrip() {
+export function StatusStrip({ refresh = true }: { refresh?: boolean }) {
   const { status, conn, retry } = useMarket();
   const chips: Array<{ key: string; node: React.ReactNode }> = [];
 
-  chips.push({
-    key: 'refresh',
-    node: (
-      <Chip>
-        <RefreshStatus />
-      </Chip>
-    ),
-  });
+  if (refresh) {
+    chips.push({
+      key: 'refresh',
+      node: (
+        <Chip>
+          <RefreshStatus />
+        </Chip>
+      ),
+    });
+  }
   if (status?.upstreamError === 'auth-rejected') {
     chips.push({
       key: 'auth',

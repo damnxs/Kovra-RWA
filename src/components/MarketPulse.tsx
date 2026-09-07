@@ -1,8 +1,7 @@
 import { useMarket } from '../data/MarketProvider';
-import { formatPrice, formatTime, formatAgo, SESSION_LABEL } from '../lib/format';
+import { formatPrice } from '../lib/format';
 import { PriceCell } from './PriceCell';
 import { ChangeLabel } from './ChangeLabel';
-import { Chip } from './Chip';
 import { StatusStrip } from './StatusStrip';
 import { StatePanel, SkeletonRows } from './StatePanel';
 
@@ -47,28 +46,12 @@ export function MarketPulse() {
 
   const loading = !status && Object.keys(quotes).length === 0 && conn === 'connecting';
 
-  // Honest stamps kept in the header (per-item details don't survive a moving tape):
-  // the newest observation time across quotes, and the equity session from ETFs.
-  const quoted = instruments.map((i) => quotes[i.id]).filter(Boolean);
-  const newest = quoted.reduce<string | null>(
-    (max, q) => (!max || q!.receivedAt > max ? q!.receivedAt : max),
-    null,
-  );
-  const firstEtf = instruments.find((i) => i.type === 'etf');
-  const etfSession = firstEtf ? (SESSION_LABEL[quotes[firstEtf.id]?.session ?? ''] ?? null) : null;
-
   return (
     <section aria-label="Market pulse" className="border-b border-line bg-surface">
       <div className="mx-auto max-w-content px-5 pt-6 sm:px-8 lg:px-12">
-        <div className="flex flex-wrap items-center gap-2">
-          {etfSession && <Chip>{etfSession}</Chip>}
-          {newest && (
-            <span className="text-xs text-muted tabular-nums">
-              as of {formatTime(newest)} · {formatAgo(newest)}
-            </span>
-          )}
-          <StatusStrip />
-        </div>
+        {/* No heading/meta by design — the tape is the section. Warn chips only
+            (demo/rate-limit/conn); the refresh chip lives on the detail pages. */}
+        <StatusStrip refresh={false} />
       </div>
 
       <div className="mt-4">
