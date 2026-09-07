@@ -60,7 +60,7 @@ export function MarketDiscovery({
             Robinhood Chain · not tradable on Kovra
           </p>
         </div>
-        <StatusStrip />
+        <StatusStrip refresh={false} />
       </div>
 
       <div className="mt-6 flex flex-col gap-3">
