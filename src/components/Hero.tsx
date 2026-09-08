@@ -1,59 +1,114 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LuArrowRight } from 'react-icons/lu';
+import { useMarket } from '../data/MarketProvider';
+import { HeroScene } from './HeroScene';
+import { PriceCell } from './PriceCell';
+import { ChangeLabel } from './ChangeLabel';
+import { formatPrice } from '../lib/format';
 
+/**
+ * Full-page hero: the live pool-price chart IS the background, and the copy is
+ * also its control surface, symbol chips switch what the background draws and
+ * the readout follows it in realtime.
+ */
 export function Hero() {
+  const { instruments, quotes, points } = useMarket();
+  const [selected, setSelected] = useState('');
+
+  // Default to the instrument with the most live action so far.
+  const ranked = useMemo(
+    () =>
+      [...instruments].sort(
+        (a, b) => (points[b.id]?.length ?? 0) - (points[a.id]?.length ?? 0),
+      ),
+    [instruments, points],
+  );
+  const active = instruments.find((i) => i.id === selected) ?? ranked[0];
+  const q = active ? quotes[active.id] : undefined;
+
   return (
     <section
-      className="relative overflow-hidden border-b border-line"
-      style={{ minHeight: 'clamp(420px, 48vh, 520px)' }}
+      className="relative min-h-[calc(100svh-150px)] overflow-hidden border-b border-line sm:min-h-[calc(100svh-72px)]"
       aria-labelledby="hero-heading"
     >
-      {/* Abstract fine grid fading into the page toward the right, with a soft
-          localized lime gradient behind it. Decorative only — never a price signal. */}
+      {active && (
+        <div className="absolute inset-0" aria-hidden="true">
+          <HeroScene series={points[active.id] ?? []} className="h-full w-full" />
+        </div>
+      )}
+      {/* Legibility washes: copy sits on the left, the chart breathes through on the right. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            'radial-gradient(560px 420px at 18% 42%, color-mix(in srgb, #ccff00 26%, transparent), transparent 68%)',
-        }}
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-page via-page/85 to-page/10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #dfe4d6 1px, transparent 1px), linear-gradient(to bottom, #dfe4d6 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-          maskImage: 'linear-gradient(to right, rgba(0,0,0,0.75), transparent 78%)',
-          WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.75), transparent 78%)',
-        }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-page to-transparent"
       />
 
-      <div className="relative mx-auto flex h-full max-w-content items-center px-5 py-16 sm:px-8 lg:px-12">
-        <div className="max-w-2xl">
-          <p className="eyebrow">Onchain RWA · Market discovery</p>
+      {/* pointer-events-none keeps the chart hoverable outside the copy. */}
+      <div className="pointer-events-none relative mx-auto flex h-full max-w-content flex-col justify-center px-5 py-16 sm:px-8 lg:px-12">
+        <div className="pointer-events-auto max-w-2xl">
           <h1
             id="hero-heading"
-            className="mt-4 font-serif leading-[1.05] tracking-[-0.01em]"
-            style={{ fontSize: 'clamp(2.5rem, 5.4vw, 5.25rem)' }}
+            className="font-serif font-light leading-[1.05] tracking-[-0.01em]"
+            style={{ fontSize: 'clamp(2.25rem, 4.6vw, 4.25rem)' }}
           >
-            Know the market before you enter.
+            Wall Street, settled onchain.
           </h1>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
-            Explore tokenized market exposure with clear data and intelligent context.
+            Tokenized stocks and real-world assets, priced swap by swap in the Uniswap pools where
+            they trade on Robinhood Chain. No legacy feeds, no oracles: every number traces to a
+            pool you can check.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href="#markets"
-              className="flex h-12 items-center whitespace-nowrap rounded-control bg-accent px-6 text-[15px] font-semibold text-ink transition-transform hover:-translate-y-px"
+
+          {/* Live readout: one quiet line, nothing boxed. */}
+          {active && q && (
+            <p className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="text-sm font-semibold uppercase tracking-[0.08em] text-muted">
+                {active.symbol}
+              </span>
+              <span className="text-2xl font-medium tabular-nums">
+                <PriceCell price={formatPrice(q.price)} />
+              </span>
+              <span className="text-sm">
+                <ChangeLabel pct={q.changePct} />
+              </span>
+            </p>
+          )}
+
+          {/* Chart controls: quiet underline tabs. */}
+          <div className="tab-scroll mt-9 flex max-w-xl gap-5 overflow-x-auto">
+            {instruments.map((i) => (
+              <button
+                key={i.id}
+                type="button"
+                aria-pressed={i.id === active?.id}
+                onClick={() => setSelected(i.id)}
+                className={`h-7 shrink-0 border-b-2 text-xs font-medium transition-colors ${
+                  i.id === active?.id
+                    ? 'border-accent text-ink'
+                    : 'border-transparent text-muted hover:text-ink'
+                }`}
+              >
+                {i.symbol}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-5">
+            <Link
+              to="/markets"
+              className="flex h-11 items-center whitespace-nowrap rounded-control bg-accent px-5 text-[15px] font-semibold text-ink transition-transform hover:-translate-y-px"
             >
               Explore markets
-            </a>
+            </Link>
             <Link
               to="/docs"
-              className="flex h-12 items-center whitespace-nowrap rounded-control border border-line bg-surface px-6 text-[15px] font-medium text-ink transition-colors hover:border-ink"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap text-[15px] font-medium text-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
             >
-              How Kovra works
+              How it works <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

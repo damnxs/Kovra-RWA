@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LuArrowRight } from 'react-icons/lu';
 import { Pie, PieChart, Cell, ResponsiveContainer } from 'recharts';
 import { useWallet, chainName, shortAddress } from '../data/WalletProvider';
 import { useMarket } from '../data/MarketProvider';
@@ -11,10 +12,10 @@ import { RefreshStatus } from '../components/RefreshStatus';
 import { formatPct } from '../lib/format';
 
 /**
- * Portofolio — high-level account overview (dashboard-style.md).
+ * Portofolio, high-level account overview (dashboard-style.md).
  * Holdings are real: ERC-20 balances read live from Robinhood Chain for the
  * connected wallet, valued at the live onchain pool prices. Nothing here is
- * estimated — an empty wallet renders an honest empty state, never a
+ * estimated, an empty wallet renders an honest empty state, never a
  * fabricated portfolio.
  */
 type Holding = {
@@ -79,8 +80,7 @@ export function Dashboard() {
           />
           <p className="mt-4 font-medium">Connecting wallet…</p>
           <p className="mt-1 text-sm leading-relaxed text-muted">
-            Confirm the request in your wallet. Your dashboard opens the moment the connection
-            completes.
+            Confirm the request in your wallet. Your dashboard opens the moment it connects.
           </p>
         </div>
       </div>
@@ -103,7 +103,7 @@ export function Dashboard() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      /* clipboard unavailable — the full address is visible below anyway */
+      /* clipboard unavailable, the full address is visible below anyway */
     }
   };
 
@@ -121,12 +121,12 @@ export function Dashboard() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="eyebrow">Connected account</p>
-          <h1 className="mt-3 font-serif text-[36px] leading-tight sm:text-[44px]">Portofolio.</h1>
+          <h1 className="mt-3 font-serif text-[36px] leading-tight sm:text-[44px]">Portfolio.</h1>
         </div>
         <RefreshStatus />
       </div>
 
-      {/* Identity and network — accurate, never a hardcoded "connected" claim. */}
+      {/* Identity and network, accurate, never a hardcoded "connected" claim. */}
       <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">
         <span className="flex items-center gap-2">
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-positive" />
@@ -163,14 +163,13 @@ export function Dashboard() {
               </button>
             </>
           )}
-          {chainConnected === false && <Chip tone="warn">Chain feed offline</Chip>}
+          {chainConnected === false && <Chip tone="warn">Chain connection down</Chip>}
         </span>
       </div>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-        Holdings below are real balances of supported tokens, read live from Robinhood Chain
-        (chainId 4663) and valued at current onchain pool prices. Values refresh about once a
-        minute. Nothing can be bought, sold, or transferred through Kovra — this is a read-only
-        view of your wallet.
+        Real balances of supported tokens, read live from Robinhood Chain and valued at current
+        pool prices. Values refresh about once a minute. This is a read-only view of your wallet:
+        nothing can be bought, sold or transferred through Kovra.
       </p>
 
       {/* Summary: with no supported holdings we do not render a fabricated $0 portfolio. */}
@@ -180,16 +179,16 @@ export function Dashboard() {
             <h2 className="font-medium">
               {loadingHoldings ? 'Reading balances on Robinhood Chain…' : 'No supported holdings detected'}
             </h2>
-            <Chip>Verified exposure only</Chip>
+            <Chip>Verified balances only</Chip>
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
             {balances.error === 'chain-unavailable'
-              ? 'Robinhood Chain could not be reached for this wallet — balances will appear when the connection recovers.'
+              ? 'Robinhood Chain could not be reached for this wallet, so balances will appear when the connection recovers.'
               : loadingHoldings
-                ? 'Fetching real ERC-20 balances for this wallet from Robinhood Chain.'
-                : 'Kovra shows exposure only from verified onchain balances of supported assets — this wallet holds none of them yet. Kovra also tracks ' +
+                ? 'Reading your token balances from Robinhood Chain.'
+                : 'Kovra only shows balances it can verify on the chain, and this wallet holds none of the supported tokens yet. Kovra also tracks ' +
                   instruments.length +
-                  ' reference instruments for discovery; watching them is not ownership.'}
+                  ' markets for research; watching one is not owning it.'}
           </p>
           <Link
             to="/markets"
@@ -201,13 +200,13 @@ export function Dashboard() {
       ) : (
         <dl className="mt-8 grid border-t border-line pt-4 sm:grid-cols-3 sm:gap-8">
           <div>
-            <dt className="text-xs text-muted">Total exposure (verified)</dt>
+            <dt className="text-xs text-muted">Total balance (verified)</dt>
             <dd className="mt-1 font-serif text-3xl tabular-nums">
               ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-muted">Period change</dt>
+            <dt className="text-xs text-muted">Change</dt>
             <dd className="mt-1 font-serif text-3xl tabular-nums">Today</dd>
           </div>
           <div>
@@ -221,16 +220,16 @@ export function Dashboard() {
       <div className="mt-4 grid gap-4 lg:grid-cols-[65fr_35fr]">
         <section aria-labelledby="exposure-heading" className="rounded-panel border border-line bg-surface p-5">
           <h2 id="exposure-heading" className="font-medium">
-            Your market exposure
+            Your holdings
           </h2>
           <table className="mt-4 w-full text-sm">
             <thead>
               <tr className="border-b border-line text-left text-xs text-muted">
-                <th scope="col" className="py-2 font-medium">Asset / exposure</th>
+                <th scope="col" className="py-2 font-medium">Asset</th>
                 <th scope="col" className="py-2 font-medium">Category</th>
-                <th scope="col" className="py-2 text-right font-medium">Allocation</th>
+                <th scope="col" className="py-2 text-right font-medium">Share of balance</th>
                 <th scope="col" className="hidden py-2 text-right font-medium sm:table-cell">Value</th>
-                <th scope="col" className="py-2 text-right font-medium">Today</th>
+                <th scope="col" className="py-2 text-right font-medium">Change</th>
               </tr>
             </thead>
             <tbody>
@@ -239,7 +238,7 @@ export function Dashboard() {
                   <td colSpan={5} className="py-8 text-center text-muted">
                     {loadingHoldings
                       ? 'Reading verified balances from Robinhood Chain…'
-                      : 'No supported holdings — allocation appears once verified balances are detected.'}
+                      : 'No supported holdings, allocation appears once verified balances are detected.'}
                   </td>
                 </tr>
               ) : (
@@ -256,13 +255,13 @@ export function Dashboard() {
                     </td>
                     <td className="py-3 text-muted">{h.category}</td>
                     <td className="py-3 text-right tabular-nums">
-                      {total > 0 ? `${Math.round((h.valueUsd / total) * 100)}%` : '—'}
+                      {total > 0 ? `${Math.round((h.valueUsd / total) * 100)}%` : 'n/a'}
                     </td>
                     <td className="hidden py-3 text-right tabular-nums sm:table-cell">
                       ${h.valueUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="py-3 text-right tabular-nums">
-                      {formatPct(h.periodChangePct) ?? '—'}
+                      {formatPct(h.periodChangePct) ?? 'n/a'}
                     </td>
                   </tr>
                 ))
@@ -274,13 +273,13 @@ export function Dashboard() {
         <div className="space-y-4">
           <section aria-labelledby="mix-heading" className="rounded-panel border border-line bg-surface p-5">
             <h2 id="mix-heading" className="font-medium">
-              Exposure mix
+              Portfolio mix
             </h2>
             {mix.length === 0 ? (
               <div className="mt-4 flex h-[180px] flex-col items-center justify-center rounded-panel border border-dashed border-line text-center">
                 <p className="text-sm text-muted">Mix chart builds from verified holdings.</p>
                 <p className="mt-1 max-w-[220px] text-xs text-muted">
-                  Generated from the same values as the allocation table — never estimated.
+                  Generated from the same values as the allocation table, never estimated.
                 </p>
               </div>
             ) : (
@@ -318,15 +317,15 @@ export function Dashboard() {
                 <p className="font-medium">Concentration</p>
                 <p className="mt-0.5 leading-relaxed text-muted">
                   {holdings.length > 0
-                    ? `Largest position is ${total > 0 ? Math.round((holdings[0]!.valueUsd / total) * 100) : 0}% of verified exposure (${holdings[0]!.name}). Computed from onchain balances only — watchlists are never read as owned exposure.`
-                    : 'No supported holdings to analyze. Concentration is computed from verified onchain balances only — watchlists are never read as owned exposure.'}
+                    ? `Largest position is ${total > 0 ? Math.round((holdings[0]!.valueUsd / total) * 100) : 0}% of verified holdings (${holdings[0]!.name}). Calculated from real balances on the chain only; your watchlist is never counted as something you own.`
+                    : 'No supported holdings to analyze. Concentration is computed from verified onchain balances only, watchlists are never read as owned exposure.'}
                 </p>
               </li>
               <li>
                 <p className="font-medium">Overlap</p>
                 <p className="mt-0.5 leading-relaxed text-muted">
                   {holdings.length >= 2
-                    ? `${holdings.length} supported holdings detected — overlap analysis across categories arrives with the full agent.`
+                    ? `${holdings.length} supported holdings detected, overlap analysis across categories arrives with the full agent.`
                     : 'Overlap detection needs at least two supported holdings; none are connected.'}
                 </p>
               </li>
@@ -334,7 +333,7 @@ export function Dashboard() {
                 <p className="font-medium">Market context</p>
                 <p className="mt-0.5 leading-relaxed text-muted">
                   {move
-                    ? `Largest tracked move today: ${move.instrument.symbol} ${formatPct(move.changePct)} within Kovra's ${instruments.length} tracked reference instruments.`
+                    ? `Largest tracked move today: ${move.instrument.symbol} ${formatPct(move.changePct)} across the ${instruments.length} markets Kovra tracks.`
                     : 'Market context appears once quote data is available.'}
                 </p>
               </li>
@@ -343,25 +342,25 @@ export function Dashboard() {
               to="/agent"
               className="mt-4 inline-flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
             >
-              Open Agent <span aria-hidden="true">&nbsp;→</span>
+              Open Agent <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
             </Link>
           </section>
         </div>
       </div>
 
-      {/* Short links only — the full watchlist and activity live on their own routes. */}
+      {/* Short links only, the full watchlist and activity live on their own routes. */}
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
           to="/watchlist"
           className="inline-flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
         >
-          View watchlist <span aria-hidden="true">&nbsp;→</span>
+          View watchlist <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
         </Link>
         <Link
           to="/activity"
           className="inline-flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
         >
-          View activity <span aria-hidden="true">&nbsp;→</span>
+          View activity <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>
@@ -376,8 +375,8 @@ function StatePanelConnect({ error, hasProvider }: { error: string | null; hasPr
         <div className="min-w-0 flex-1">
           <p className="font-medium">Connect a wallet to open your dashboard</p>
           <div className="mt-1 text-sm leading-relaxed text-muted">
-            Connecting shows your real token balances on Robinhood Chain. Kovra holds no keys,
-            signs nothing, and cannot move funds — this is a read-only view.
+            Connecting shows your real token balances on Robinhood Chain. Kovra never controls
+            your wallet, never sends transactions, cannot move funds: read-only, always.
           </div>
         </div>
         <div className="shrink-0">
@@ -391,7 +390,7 @@ function StatePanelConnect({ error, hasProvider }: { error: string | null; hasPr
       )}
       {!hasProvider && (
         <p className="mt-3 text-sm text-muted">
-          No wallet was detected in this browser. Install an EVM wallet such as MetaMask, or open
+          No wallet was detected in this browser. Install a crypto wallet such as MetaMask, or open
           Kovra in your wallet&rsquo;s built-in browser.
         </p>
       )}
@@ -399,8 +398,8 @@ function StatePanelConnect({ error, hasProvider }: { error: string | null; hasPr
         Just exploring?{' '}
         <Link to="/markets" className="font-medium text-ink underline underline-offset-4">
           Browse markets
-        </Link>{' '}
-        — no wallet needed.
+        </Link>
+        , no wallet needed.
       </p>
     </div>
   );

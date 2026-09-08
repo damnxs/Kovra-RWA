@@ -28,7 +28,7 @@ export function PriceCell({
   const cls = dir === 'up' ? 'flash-up' : dir === 'down' ? 'flash-down' : '';
   return (
     <span className={`tabular-nums inline-block rounded px-1 py-0.5 -mx-1 ${cls} ${className}`}>
-      {price ?? '—'}
+      {price ?? 'n/a'}
     </span>
   );
 }

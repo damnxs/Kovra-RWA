@@ -9,9 +9,10 @@ import {
   type ReactNode,
 } from 'react';
 import type { Instrument, Quote, Status, HistoryPoint } from '../types/quote';
+import { onStreamEvent } from './stream';
 
 /**
- * Single client data path. One shared 60-second refresh loop for the whole app —
+ * Single client data path. One shared 60-second refresh loop for the whole app:
  * never per visitor, never per page. Labels say "auto-updated", never "live".
  */
 export type Conn = 'connecting' | 'ok' | 'error';
@@ -24,7 +25,7 @@ type MarketCtx = {
   conn: Conn;
   /** True while a refresh round-trip is in flight (small "Updating…" state). */
   refreshing: boolean;
-  /** Epoch ms of the last successful quotes fetch — drives "Updated Xs ago". */
+  /** Epoch ms of the last successful quotes fetch, drives "Updated Xs ago". */
   lastUpdatedAt: number | null;
   /** Force an immediate refresh (Retry button). */
   retry: () => void;
@@ -115,7 +116,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         mergeHistory(inst.id, h.points);
       }
     } catch {
-      setConn('error'); // server unreachable — keep last known data visible
+      setConn('error'); // server unreachable, keep last known data visible
     } finally {
       inFlightRef.current = false;
       setRefreshing(false);
@@ -132,6 +133,28 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       .then((d: { instruments: Instrument[] }) => setInstruments(d.instruments))
       .catch(() => setInstruments([]));
   }, []);
+
+  useEffect(() => {
+    // Realtime push over the shared SSE connection; the 60s tick stays as the
+    // fallback path and history sync.
+    const offInit = onStreamEvent('init', (d) => {
+      const { quotes: qs, status: st, history } = d as {
+        quotes: Quote[];
+        status: Status;
+        history: Record<string, HistoryPoint[]>;
+      };
+      mergeQuotes(qs);
+      setStatus(st);
+      for (const [id, pts] of Object.entries(history)) mergeHistory(id, pts);
+    });
+    const offQuotes = onStreamEvent('quotes', (d) => mergeQuotes((d as { quotes: Quote[] }).quotes));
+    const offStatus = onStreamEvent('status', (d) => setStatus(d as Status));
+    return () => {
+      offInit();
+      offQuotes();
+      offStatus();
+    };
+  }, [mergeQuotes, mergeHistory]);
 
   useEffect(() => {
     void tick();

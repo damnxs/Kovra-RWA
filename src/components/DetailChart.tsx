@@ -10,7 +10,7 @@ import type { HistoryPoint } from '../types/quote';
 import { formatTime } from '../lib/format';
 
 /**
- * Since-connection series only. Historical candles are a premium Finnhub
+ * Since-connection series only. Historical candles need a historical feed
  * endpoint and are never called, so nothing here is a full-day history.
  */
 export function DetailChart({ points }: { points?: HistoryPoint[] }) {
@@ -20,8 +20,7 @@ export function DetailChart({ points }: { points?: HistoryPoint[] }) {
       <div className="flex h-[280px] flex-col items-center justify-center rounded-panel border border-dashed border-line bg-surface text-center">
         <p className="text-sm text-muted">Chart builds as observations arrive.</p>
         <p className="mt-1 max-w-xs text-xs text-muted">
-          The series starts when the data service connects; historical candles are not available on
-          the free plan.
+          Full price history is not available yet.
         </p>
       </div>
     );
@@ -71,8 +70,7 @@ export function DetailChart({ points }: { points?: HistoryPoint[] }) {
         </ResponsiveContainer>
       </div>
       <figcaption className="mt-2 text-xs text-muted">
-        Since connection — historical candles are not available on the free plan. {data.length}{' '}
-        observations.
+        Prices since you connected (full history is not available yet). {data.length} price points.
       </figcaption>
     </figure>
   );

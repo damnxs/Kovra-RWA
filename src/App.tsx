@@ -11,6 +11,7 @@ import { Watchlist } from './pages/Watchlist';
 import { Activity } from './pages/Activity';
 import { Agent } from './pages/Agent';
 import { Trade } from './pages/Trade';
+import { NotFound } from './pages/NotFound';
 import { WalletProvider } from './data/WalletProvider';
 import { OnchainProvider } from './data/OnchainProvider';
 
@@ -45,13 +46,13 @@ export default function App() {
             <Route path="/markets/:id" element={<MarketDetail />} />
             <Route path="/trade/:id" element={<Trade />} />
             <Route path="/docs" element={<Docs />} />
-            {/* Old About URL still resolves — it became the docs page. */}
+            {/* Old About URL still resolves, it became the docs page. */}
             <Route path="/about" element={<Docs />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/agent" element={<Agent />} />
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/activity" element={<Activity />} />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </OnchainProvider>

@@ -27,7 +27,7 @@ export function Nav() {
           kovra
         </Link>
         <div className="col-start-3 flex items-center justify-end">
-          {/* Wallet's actual network — never a hardcoded "connected" indicator. */}
+          {/* Wallet's actual network, never a hardcoded "connected" indicator. */}
           {address && (
             <span className="hidden max-w-[140px] truncate rounded-control border border-line bg-surface px-2.5 py-1.5 text-xs text-muted md:inline-block">
               {chainName(chainId)}
@@ -43,7 +43,7 @@ export function Nav() {
             markets
           </NavLink>
           <NavLink to="/dashboard" className={linkCls}>
-            portofolio
+            portfolio
           </NavLink>
           <NavLink to="/agent" className={linkCls}>
             agent
@@ -52,7 +52,7 @@ export function Nav() {
             activity
           </NavLink>
           <NavLink to="/docs" className={linkCls}>
-            docs
+            guide
           </NavLink>
         </nav>
       </div>

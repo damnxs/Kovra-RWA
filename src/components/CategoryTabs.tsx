@@ -23,7 +23,7 @@ export function CategoryTabs({
 
   return (
     <ScrollFade className="-mx-1 min-w-0 flex-1">
-      <div role="tablist" aria-label="Instrument categories" className="tab-scroll flex gap-1 py-1">
+      <div role="tablist" aria-label="Market categories" className="tab-scroll flex gap-1 py-1">
         {categories.map((c, i) => {
           const isSel = c === selected;
           return (

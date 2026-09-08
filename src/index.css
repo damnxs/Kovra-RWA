@@ -1,9 +1,10 @@
 @import 'tailwindcss';
-@import '@fontsource/instrument-serif/400.css';
-@import '@fontsource/instrument-serif/400-italic.css';
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
+@import '@fontsource/newsreader/300.css';
+@import '@fontsource/newsreader/400.css';
+@import '@fontsource/newsreader/400-italic.css';
+@import '@fontsource/geist-sans/400.css';
+@import '@fontsource/geist-sans/500.css';
+@import '@fontsource/geist-sans/600.css';
 
 /* style.md tokens, verbatim values */
 :root {
@@ -37,8 +38,8 @@
 
   --container-content: 1280px;
 
-  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Geist Sans', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
@@ -68,7 +69,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Real-movement highlight only — applied by PriceCell when a source price changes. */
+/* Real-movement highlight only, applied by PriceCell when a source price changes. */
 @keyframes flash-up {
   from {
     background-color: color-mix(in srgb, var(--positive) 14%, transparent);
@@ -93,6 +94,22 @@
 
 .flash-down {
   animation: flash-down 500ms ease-out;
+}
+
+/* New chain activity (components/activity/ChainFeed): a row that arrived
+   after the feed first filled washes with a soft accent tint once, then
+   settles to transparent. */
+@keyframes flash-new {
+  from {
+    background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.flash-new {
+  animation: flash-new 1.2s ease-out;
 }
 
 /* Soft entrance for pages/state swaps (wallet flow). The reduced-motion block
@@ -190,6 +207,15 @@
   text-transform: uppercase;
   color: var(--muted);
   font-weight: 500;
+}
+
+/* Hide every scrollbar project-wide; scrolling still works everywhere. */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Horizontal tab scroller on mobile without page-level overflow. */

@@ -17,12 +17,12 @@ function write(ids: string[]) {
   try {
     localStorage.setItem(KEY, JSON.stringify(ids));
   } catch {
-    /* ignore — watchlist simply won't persist */
+    /* ignore, watchlist simply won't persist */
   }
 }
 
 /**
- * Local watchlist of watched instruments — explicitly not owned exposure.
+ * Local watchlist of watched instruments, explicitly not owned exposure.
  * Works without a wallet; the stored id list is the state a future wallet-sync
  * would migrate. Toggling is recorded in the local activity log.
  */

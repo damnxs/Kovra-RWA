@@ -10,7 +10,7 @@ export function SearchField({
   return (
     <div className="relative w-full sm:max-w-xs">
       <label htmlFor={id} className="sr-only">
-        Search instruments
+        Search markets
       </label>
       <input
         id={id}

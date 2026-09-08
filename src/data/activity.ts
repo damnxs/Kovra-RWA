@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 /**
- * Local activity log. Only real actions performed in this app are recorded —
+ * Local activity log. Only real actions performed in this app are recorded:
  * wallet connect/disconnect and watchlist changes. Onchain events
  * ('asset-detected', 'onchain-transfer') have no source yet and are never
  * fabricated; their kinds exist so verified events can land here later.
@@ -22,9 +22,9 @@ export type ActivityEvent = {
   kind: ActivityKind;
   source: ActivitySource;
   symbol?: string;
-  /** Value/amount — only when verifiable; local events never carry one. */
+  /** Value/amount, only when verifiable; local events never carry one. */
   value?: string;
-  /** Transaction hash/link — only for real onchain events. */
+  /** Transaction hash/link, only for real onchain events. */
   txHash?: string;
 };
 
@@ -64,7 +64,7 @@ function publish(next: ActivityEvent[]) {
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {
-    /* ignore — activity simply won't persist */
+    /* ignore, activity simply won't persist */
   }
   for (const l of listeners) l();
 }
@@ -86,7 +86,7 @@ if (typeof window !== 'undefined') {
 export function appendActivity(event: { kind: ActivityKind; symbol?: string }): void {
   const current = snapshot();
   const last = current[0];
-  // The same action can arrive twice (e.g. connect() plus accountsChanged) — collapse it.
+  // The same action can arrive twice (e.g. connect() plus accountsChanged), collapse it.
   if (
     last &&
     last.kind === event.kind &&

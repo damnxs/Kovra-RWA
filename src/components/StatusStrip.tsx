@@ -2,14 +2,10 @@ import { useMarket } from '../data/MarketProvider';
 import { Chip } from './Chip';
 import { RefreshStatus } from './RefreshStatus';
 
-function rateLimited(status: { rateLimitedUntil: string | null } | null): boolean {
-  return !!status?.rateLimitedUntil && Date.parse(status.rateLimitedUntil) > Date.now();
-}
-
 /**
- * Service-state chips shown wherever quotes render: refresh model, demo,
- * rate limit, auth, connection. "Live" is never shown — the client refreshes
- * on a 60-second cycle by design.
+ * Service-state chips shown wherever quotes render: chain-node state and
+ * connection. "Live" is never shown, the client refreshes on a 60-second
+ * cycle by design.
  */
 export function StatusStrip({ refresh = true }: { refresh?: boolean }) {
   const { status, conn, retry } = useMarket();
@@ -25,22 +21,10 @@ export function StatusStrip({ refresh = true }: { refresh?: boolean }) {
       ),
     });
   }
-  if (status?.upstreamError === 'auth-rejected') {
+  if (status && !status.chain.connected) {
     chips.push({
-      key: 'auth',
-      node: <Chip tone="warn">Data source rejected credentials</Chip>,
-    });
-  }
-  if (status?.demo) {
-    chips.push({
-      key: 'demo',
-      node: <Chip tone="warn">Simulated data — not real prices</Chip>,
-    });
-  }
-  if (rateLimited(status)) {
-    chips.push({
-      key: 'ratelimit',
-      node: <Chip tone="warn">Rate limited — retrying</Chip>,
+      key: 'chain',
+      node: <Chip tone="warn">Chain connection lost, showing last known prices</Chip>,
     });
   }
   if (conn === 'error') {
@@ -48,7 +32,7 @@ export function StatusStrip({ refresh = true }: { refresh?: boolean }) {
       key: 'conn',
       node: (
         <Chip tone="warn">
-          <span>Connection lost — showing last known data</span>
+          <span>Connection lost, showing last known data</span>
           <button
             type="button"
             onClick={retry}

@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { appendActivity } from './activity';
 
 /**
- * Minimal EIP-1193 injected-wallet connection — identity only.
+ * Minimal EIP-1193 injected-wallet connection, identity only.
  * Kovra holds no keys, signs nothing, and cannot move funds. No SDK needed.
  */
 type Eip1193 = {
@@ -33,7 +33,7 @@ type WalletState = {
 
 const WalletContext = createContext<WalletState | null>(null);
 
-/** Robinhood Chain — Arbitrum Orbit L2, chainId 4663. */
+/** Robinhood Chain, Arbitrum Orbit L2, chainId 4663. */
 export const RH_CHAIN_ID = '0x1237';
 
 const CHAIN_NAMES: Record<string, string> = {
@@ -47,7 +47,7 @@ const CHAIN_NAMES: Record<string, string> = {
   [RH_CHAIN_ID]: 'Robinhood Chain',
 };
 
-/** Wallet's actual network name — whatever the wallet reports, no assumptions. */
+/** Wallet's actual network name, whatever the wallet reports, no assumptions. */
 export function chainName(chainId: string | null): string {
   if (!chainId) return 'Unknown network';
   return CHAIN_NAMES[chainId] ?? `Chain #${parseInt(chainId, 16)}`;
@@ -63,7 +63,7 @@ const DISCONNECTED_FLAG = 'kovra:wallet-disconnected';
 function setDisconnectedFlag() {
   try {
     localStorage.setItem(DISCONNECTED_FLAG, '1');
-  } catch { /* storage unavailable — revoke below is then the only guard */ }
+  } catch { /* storage unavailable, revoke below is then the only guard */ }
 }
 
 function clearDisconnectedFlag() {
@@ -78,7 +78,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // wallet_addEthereumChain params come from the server (single source of truth —
+  // wallet_addEthereumChain params come from the server (single source of truth:
   // the RPC URL is server config, not shipped in the client bundle).
   const chainParamsRef = useRef<Record<string, unknown> | null>(null);
   const getChainParams = useCallback(async () => {
@@ -100,19 +100,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: RH_CHAIN_ID }] });
       setChainId(RH_CHAIN_ID);
     } catch {
-      /* declined or unsupported — the wallet keeps its network; UI keeps showing it */
+      /* declined or unsupported, the wallet keeps its network; UI keeps showing it */
     }
   }, [getChainParams]);
 
   useEffect(() => {
     const eth = window.ethereum;
     if (!eth) return;
-    // Silent restore: eth_accounts only reveals accounts already authorized — no prompt.
+    // Silent restore: eth_accounts only reveals accounts already authorized, no prompt.
     // Skipped after a user disconnect, until they explicitly connect again.
     let userDisconnected = false;
     try {
       userDisconnected = localStorage.getItem(DISCONNECTED_FLAG) === '1';
-    } catch { /* storage unavailable — restore is then always attempted */ }
+    } catch { /* storage unavailable, restore is then always attempted */ }
     if (!userDisconnected) {
       eth.request({ method: 'eth_accounts' }).then((accounts) => {
         const [first] = (accounts ?? []) as string[];
@@ -143,7 +143,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const connect = useCallback(async () => {
     const eth = window.ethereum;
     if (!eth) {
-      setError('No wallet detected. Install an EVM wallet such as MetaMask, or open Kovra in your wallet browser.');
+      setError('No wallet detected. Install a crypto wallet such as MetaMask, or open Kovra in your wallet\'s built-in browser.');
       return;
     }
     setConnecting(true);
@@ -160,7 +160,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       appendActivity({ kind: 'wallet-connected' });
       const current = ((await eth.request({ method: 'eth_chainId' })) as string) ?? null;
       setChainId(current);
-      // Offer Robinhood Chain after connect — the wallet asks, the user decides.
+      // Offer Robinhood Chain after connect, the wallet asks, the user decides.
       if (current !== RH_CHAIN_ID) void switchToRobinhoodChain();
     } catch (e) {
       const code = (e as { code?: number }).code;

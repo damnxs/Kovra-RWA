@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 /**
  * Scroll-reveal wrapper: fades content up the first time it enters the
  * viewport (IntersectionObserver, once). Reduced-motion users see it
- * immediately — reveal is decoration, never information.
+ * immediately, reveal is decoration, never information.
  */
 export function Reveal({
   children,
@@ -12,11 +12,11 @@ export function Reveal({
 }: {
   children: ReactNode;
   className?: string;
-  /** Stagger in ms — shifts the transition, not the detection. */
+  /** Stagger in ms, shifts the transition, not the detection. */
   delay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  // Reduced-motion users see content immediately — reveal is decoration, never
+  // Reduced-motion users see content immediately, reveal is decoration, never
   // information. Computed once as the initial state, no effect needed for it.
   const [shown, setShown] = useState(
     () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,

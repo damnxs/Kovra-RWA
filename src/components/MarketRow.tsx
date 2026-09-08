@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { LuArrowRight } from 'react-icons/lu';
 import type { Instrument, Quote, HistoryPoint } from '../types/quote';
 import { formatPrice, formatTime } from '../lib/format';
 import { PriceCell } from './PriceCell';
@@ -25,7 +26,7 @@ export function MarketRow({
   const { symbol, name, id } = instrument;
   return (
     <li className="border-b border-line last:border-b-0">
-      {/* ponytail: 4 cols at sm, full 5-col grid only at lg — 5 cols below 1024 starve the identity column */}
+      {/* ponytail: 4 cols at sm, full 5-col grid only at lg, 5 cols below 1024 starve the identity column */}
       <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 px-4 py-4 transition-colors hover:bg-page sm:grid-cols-[minmax(0,1fr)_150px_120px_96px] sm:px-5 lg:grid-cols-[minmax(0,1fr)_120px_170px_120px_96px]">
         <div className="min-w-0">
           <Link to={`/markets/${id}`} className="group block">
@@ -36,9 +37,7 @@ export function MarketRow({
               <span className="truncate text-sm text-muted">{name}</span>
             </p>
             <p className="mt-0.5 truncate text-xs text-muted">
-              {instrument.type === 'token'
-                ? `Onchain token · ${instrument.proxyLabel} · ${instrument.venue}`
-                : `ETF · ${instrument.proxyLabel} · ${instrument.venue}`}
+              {`Token on Robinhood Chain · ${instrument.proxyLabel} · ${instrument.venue}`}
             </p>
           </Link>
         </div>
@@ -54,7 +53,7 @@ export function MarketRow({
               <span className="text-xs text-muted">{quote.currency}</span>
             </p>
           ) : (
-            <p className="text-sm text-muted">—</p>
+            <p className="text-sm text-muted">n/a</p>
           )}
         </div>
 
@@ -63,7 +62,7 @@ export function MarketRow({
             <>
               <ChangeLabel pct={quote.changePct} />
               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted sm:justify-end">
-                {quote.stale && <Chip tone="warn">Stale</Chip>}
+                {quote.stale && <Chip tone="warn">Delayed</Chip>}
                 <span className="tabular-nums whitespace-nowrap">as of {formatTime(quote.sourceTimestamp)}</span>
               </p>
             </>
@@ -76,10 +75,10 @@ export function MarketRow({
           {action === 'trade' ? (
             <Link
               to={`/trade/${id}`}
-              aria-label={`Trade ${symbol}`}
+              aria-label={`Preview a trade in ${symbol}`}
               className="flex h-11 items-center rounded-control bg-accent px-4 text-sm font-medium text-ink transition-opacity hover:opacity-85"
             >
-              Trade
+              Preview trade
             </Link>
           ) : (
             <button
@@ -101,7 +100,7 @@ export function MarketRow({
             aria-label={`View details for ${symbol}`}
             className="flex h-11 w-11 items-center justify-center rounded-control text-muted transition-colors hover:bg-accent-soft hover:text-ink"
           >
-            <span aria-hidden="true">→</span>
+            <LuArrowRight aria-hidden="true" className="h-4 w-4" />
           </Link>
         </div>
       </div>

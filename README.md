@@ -1,9 +1,10 @@
 # Kovra — public homepage
 
 Market-discovery frontend for an onchain RWA platform under development. Shows a
-small verified universe of five US ETF proxies (SPY, QQQ, XLE, XLF, XLV) with
-honest sourcing: real prices only, timestamps for source and receipt, and no
-fabricated history. Nothing here is tradable, and nothing is investment advice.
+small verified universe of eleven ERC-20 instruments on Robinhood Chain
+(tokenized equities, a private-asset token, WETH, USDG) with honest sourcing:
+real pool prices only, timestamps for source and receipt, and no fabricated
+history. Nothing here is tradable, and nothing is investment advice.
 
 ## Stack
 
@@ -12,11 +13,9 @@ fabricated history. Nothing here is tradable, and nothing is investment advice.
 - React Router (routes `/`, `/markets`, `/markets/:id`, `/trade/:id`, `/watchlist`,
   `/agent`, `/activity`, `/about`, `/dashboard`, `/docs`)
 - recharts (since-connection sparklines and detail charts)
-- Express API server in `server/` — holds the Finnhub key server-side, never in
-  the browser bundle; SSE fan-out; Node 22 global WebSocket (no `ws` dependency)
-- One server-side raw-JSON-RPC WebSocket to a Robinhood Chain test node
-  (`server/chain.ts`) for onchain instruments — no ethers/web3 dependency
-
+- Express API server in `server/`
+- One server-side raw-JSON-RPC WebSocket to a Robinhood Chain test node — the
+  single data source, no market-data API, no ethers/web3/viem dependency
 
 ## Scripts
 
@@ -27,32 +26,29 @@ fabricated history. Nothing here is tradable, and nothing is investment advice.
 | `npm run build` | typecheck-then-build client into `dist/` |
 | `npm start` | production: Express on :8787 serving `dist/` + API |
 | `npm run typecheck` | `tsc --noEmit` over `src/` and `server/` |
-| `npm run check:session` | runnable check of ET session/holiday/DST math |
-| `npm run check:stale` | runnable check of the stale-detection axis (7 cases) |
-| `npm run check:reliability` | offline stub harness: 429/backoff/reconnect/demo/SSE fan-out (~5 min) |
-| `npm run check:chain` | live sanity check of the onchain pricing path (needs the test node reachable) |
+| `npm run check:chain` | live sanity check of the onchain pricing + TVL path (needs the node reachable) |
 
 ## Architecture
 
 ```
 server/
-  config.ts    env parsing (.env.example lists every var incl. KOVRA_CHAIN_*)
-  registry.ts  instrument registry — ETF proxies + 11 onchain tokens, all tradable:false
-  session.ts   ET market session via Intl America/New_York + static 2026 NYSE holidays
-  finnhub.ts   REST /quote bootstrap + WS trades; backoff+jitter reconnect;
-               server-global 15s poll fallback after 3 WS failures; 429 handling
+  config.ts    env parsing (.env.example lists every var, all KOVRA_CHAIN_*)
+  registry.ts  instrument registry — 11 onchain tokens, all tradable:false
   chain.ts     one raw-JSON-RPC WS to the Robinhood Chain test node (chainId 4663):
                Uniswap V3 pool Swap-event pricing (sane-price band, then busiest
                pool), weth-quoted cross-rates, usdg at $1 issuer peg; ERC-20
-               transfer feed; Nitro quirk handled (eth_blockNumber takes no params)
+               transfer feed; pool TVL recomputed on liquidity events
+               (Mint/Burn/Collect) over the same WS — no polling; Nitro quirk
+               handled (eth_blockNumber takes no params)
   store.ts     normalized quote cache, since-connection point rings (cap 720),
-               SSE fan-out (batched ~250ms, price-changed only), stale sweep,
-               isolated demo fixtures
+               SSE fan-out (batched ~250ms, price-changed only; stats ride the
+               same batch as 'onchain' messages), stale sweep
   routes.ts    GET /api/markets /api/quotes /api/stream (SSE) /api/history
                /api/onchain/feed (SSE) /api/onchain/balances /api/onchain/transfers
 src/
-  types/quote.ts        shared contracts (Quote is exactly technical.md L67-81)
-  data/MarketProvider   single client data path: EventSource + poll fallback
+  types/quote.ts        shared client/server contracts
+  data/MarketProvider   quote path: initial REST + 60s refresh fallback
+  data/OnchainProvider  transfer feed + swap/TVL stats via SSE push (no polling)
   data/WalletProvider   minimal EIP-1193 injected-wallet connect (identity only, no SDK)
   data/useWatchlist     localStorage watchlist (guarded)
   lib/format.ts         price/pct/time/"Updated Xs ago"
@@ -62,31 +58,25 @@ src/
   components/           editorial UI per style.md
 ```
 
-Data flow: server holds one upstream subscription per instance and fans out
-normalized quotes over SSE (`init` / `quotes` / `status`, heartbeat every 20s).
-The browser holds one EventSource; it never polls per visitor.
+Data flow: the server holds one WS connection to the chain node and fans out
+normalized quotes, transfers, and swap/TVL stats over SSE (`init` / `quotes` /
+`onchain` / `status`, heartbeat every 20s). The browser holds one EventSource;
+it never polls per visitor. The 60-second client refresh is a same-origin
+fallback round-trip, not an external call.
 
 ## Verified vs. not verified
 
 Verified:
 
 - `npm install`, `npm run typecheck`, `npm run build` clean.
-- Missing-key run: homepage renders the public-safe state, `/api/markets`
-  returns the registry, SSE responds with `init` and the missing-key status.
-- Session math (DST, weekends, 2026 NYSE holidays incl. Labor Day) via
-  `npm run check:session`.
-- Onchain pricing path against the live test node via `npm run check:chain`
-  (11/11 instruments pass).
-- Honest-motion audit: no `Math.random`/synthetic ticks anywhere in price paths
-  (the only random use is WS reconnect jitter in `server/finnhub.ts`).
-- Built `dist/` contains no provider key (server-only env).
+- Onchain pricing + TVL path against the live test node via `npm run check:chain`
+  (11/11 prices sane, 10/10 pooled TVLs present; usdg is peg-priced, never pooled).
+- Honest-motion audit: no `Math.random`/synthetic ticks anywhere in price paths.
 
 Not verified during this build:
 
-- A live tick observed in an open session (build day was Labor Day, NYSE
-  closed). WS trade handling is implemented per Finnhub's documented frame
-  shape (`trade` with `data[].p`/`data[].t`, `ping` frames) and observed
-  frames, but open-session streaming should be re-observed on a trading day.
+- Behavior across a chain-node outage window (backoff/reconnect paths are
+  implemented; a sustained outage was not observed end to end).
 
 ## Wallet, dashboard, trade preview
 
@@ -111,20 +101,12 @@ Track — is laid out in the homepage's "How Kovra works" section.
 
 ## Limitations
 
-- History: `/stock/candle` is premium-only and never called. Charts show the
-  since-connection series with that label, or an honest placeholder.
-- Redistribution/public-display rights for Finnhub free data are unresolved —
-  `PUBLIC_DISPLAY_APPROVED=false` by default; see `public/docs/provider-assessment.md`
-  (served at `/docs/provider-assessment.md`).
-- All instruments are reference proxies, `tradable: false`, and shown with
-  proxy labels; an ETF price is never presented as an index level.
+- Charts show the since-connection series with that label, or an honest
+  placeholder; there is no historical candle feed.
+- All instruments are `tradable: false` and shown with proxy labels; a pool price
+  is never presented as an exchange quote.
 - Onchain instruments are priced from Uniswap V3 pool swaps on a **test node** —
   indicative only. The 1 RBNC = $1 trade rate is a placeholder, not a market price.
+- Volume/swap counters accumulate since server connection; TVL refreshes on real
+  liquidity events (swap fee accrual is picked up on the next such event).
 - No Robinhood/Robinhood Chain affiliation or verified asset integration.
-- Ops: the Finnhub free tier appears to allow **one active WebSocket per key** —
-  two server instances sharing a key will keep disconnecting each other. Run one
-  server instance per key.
-- `DEMO_MODE=true` serves a clearly labeled simulation: prices move (small
-  random-walk ticks every 3s) but every surface shows "Simulated data — not
-  real prices"; it never contacts upstream and never mixes with the live cache.
-  Set `DEMO_MODE=false` for real Finnhub data.

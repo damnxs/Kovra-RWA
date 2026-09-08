@@ -29,7 +29,7 @@ export function ScrollFade({
     el.addEventListener('scroll', update, { passive: true });
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    // Tabs/items mount after data loads — re-measure when children change.
+    // Tabs/items mount after data loads, re-measure when children change.
     const mo = new MutationObserver(update);
     mo.observe(el, { childList: true, subtree: true });
     return () => {

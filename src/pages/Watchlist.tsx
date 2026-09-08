@@ -14,7 +14,7 @@ const LIST_ID = 'watchlist-list';
 const CATEGORIES = ['All', 'Technology', 'Energy', 'Financials', 'AI & Robotics', 'Healthcare'];
 
 /**
- * Saved markets — the user's watchlist only. Persists locally and works before
+ * Saved markets, the user's watchlist only. Persists locally and works before
  * wallet connection; the stored ids are the state a future wallet-sync migrates.
  */
 export function Watchlist() {
@@ -53,9 +53,8 @@ export function Watchlist() {
           <p className="eyebrow">Saved markets</p>
           <h1 className="mt-3 font-serif text-[36px] leading-tight sm:text-[44px]">Watchlist.</h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-            Instruments you watch — saved locally in this browser and usable without a wallet.
-            When Kovra access goes live, this list is the state a wallet sync starts from. Watched
-            instruments are references, not owned exposure.
+            Your shortlist of the tape, kept in this browser, no wallet needed. It will be ready
+            when watchlist sync arrives. Watching a market is not owning it.
           </p>
         </div>
         <StatusStrip />
@@ -69,13 +68,13 @@ export function Watchlist() {
         </div>
       </div>
 
-      <div className="mt-4" id={LIST_ID} role="tabpanel" aria-label="Saved instruments">
+      <div className="mt-4" id={LIST_ID} role="tabpanel" aria-label="Saved markets">
         {saved.length === 0 ? (
           <div className="rounded-panel border border-line bg-surface px-5 py-5">
-            <p className="font-medium">Your watchlist is empty</p>
+            <p className="font-medium">Nothing on your watchlist yet</p>
             <p className="mt-1 max-w-lg text-sm leading-relaxed text-muted">
-              Watch instruments from the markets page to see them here with prices, changes, and
-              sparklines.
+              Watch any market from the Markets page and it lands here with its live price, move
+              and momentum.
             </p>
             <Link
               to="/markets"
@@ -86,7 +85,7 @@ export function Watchlist() {
           </div>
         ) : rows.length === 0 ? (
           <div className="rounded-panel border border-line bg-surface px-5 py-5">
-            <p className="font-medium">No saved instruments match{query ? ` “${query.trim()}”` : ''}.</p>
+            <p className="font-medium">No saved markets match{query ? ` “${query.trim()}”` : ''}.</p>
             <p className="mt-1 text-sm leading-relaxed text-muted">
               Try a different search term or category.
             </p>
@@ -102,7 +101,7 @@ export function Watchlist() {
             </button>
           </div>
         ) : (
-          <ul className="rounded-panel border border-line bg-surface" aria-label="Saved instrument list">
+          <ul className="rounded-panel border border-line bg-surface" aria-label="Saved market list">
             {rows.map((inst) => (
               <MarketRow
                 key={inst.id}

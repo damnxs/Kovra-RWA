@@ -11,20 +11,21 @@
     "lint": "eslint .",
     "start": "NODE_ENV=production tsx server/index.ts",
     "typecheck": "tsc --noEmit",
-    "check:session": "tsx server/session.check.ts",
-    "check:stale": "tsx server/stale.check.ts",
-    "check:reliability": "tsx server/reliability.check.ts",
     "check:chain": "tsx server/chain.check.ts"
   },
   "dependencies": {
-    "@fontsource/instrument-serif": "^5.1.1",
-    "@fontsource/inter": "^5.1.1",
+    "@fontsource/geist-sans": "^5.3.0",
+    "@fontsource/newsreader": "^5.3.0",
     "dotenv": "^16.4.5",
+    "echarts": "^6.1.0",
     "express": "^4.21.2",
+    "openai": "^7.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.7.0",
     "react-router-dom": "^6.28.0",
-    "recharts": "^2.15.0"
+    "recharts": "^2.15.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -32,6 +33,7 @@
     "@types/express": "^4.17.21",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.0",
     "eslint": "^10.10.0",

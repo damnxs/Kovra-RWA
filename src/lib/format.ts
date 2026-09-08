@@ -7,7 +7,7 @@ const priceFmt = new Intl.NumberFormat('en-US', {
 
 export function formatPrice(price: string | null | undefined): string {
   const n = Number(price);
-  if (price === null || price === undefined || !Number.isFinite(n)) return '—';
+  if (price === null || price === undefined || !Number.isFinite(n)) return 'n/a';
   return priceFmt.format(n);
 }
 
@@ -27,15 +27,25 @@ export function directionWord(pct: number | null | undefined): string | null {
 }
 
 export function formatTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return 'n/a';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return 'n/a';
   const sameDay = new Date().toDateString() === d.toDateString();
   const time = d.toLocaleTimeString('en-US', { hour12: false });
   return sameDay ? time : `${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ${time}`;
 }
 
 /** 'Updated 12s ago' / 'Updated 3m ago' relative to now. */
+/** Compact USD for log/stat lines: $1.23M, $456.7K, $12.34. */
+export function formatUsdCompact(n: number | null | undefined): string {
+  if (n == null || !Number.isFinite(n)) return 'n/a';
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+  if (abs >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
+  if (abs >= 1e3) return `$${(n / 1e3).toFixed(1)}K`;
+  return `$${n.toFixed(2)}`;
+}
+
 export function formatAgo(iso: string | null | undefined, now: number = Date.now()): string | null {
   if (!iso) return null;
   const t = Date.parse(iso);
@@ -49,10 +59,3 @@ export function formatAgo(iso: string | null | undefined, now: number = Date.now
   return `Updated ${h}h ago`;
 }
 
-export const SESSION_LABEL: Record<string, string> = {
-  open: 'Market open',
-  closed: 'Market closed',
-  pre: 'Pre-market',
-  post: 'Post-market',
-  unknown: 'Session unknown',
-};

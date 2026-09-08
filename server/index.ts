@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { api } from './routes.js';
 import { startTimers } from './store.js';
-import { startMarketData } from './finnhub.js';
 import { startChainData } from './chain.js';
 
 const app = express();
 app.disable('x-powered-by');
+app.use(express.json({ limit: '64kb' }));
 app.use('/api', api);
 
 // Production: serve the built client (Vite copies public/docs into dist/docs).
@@ -20,7 +20,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 startTimers();
-startMarketData();
 startChainData();
 
 app.listen(config.port, () => {

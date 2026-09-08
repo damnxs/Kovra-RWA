@@ -22,8 +22,8 @@ export function RefreshStatus() {
         {refreshing
           ? 'Updating…'
           : ago
-            ? `Auto-updated every minute · ${ago.toLowerCase()}`
-            : 'Auto-updated every minute'}
+            ? `Updated every minute · ${ago.toLowerCase().replace(/^updated /, '')}`
+            : 'Updated every minute'}
       </span>
     </span>
   );

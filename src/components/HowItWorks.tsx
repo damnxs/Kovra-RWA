@@ -8,32 +8,32 @@ const STEPS: Step[] = [
   {
     title: 'Discover',
     live: true,
-    body: 'Browse a verified universe of market references — broad market, technology, energy, financials, healthcare — with search, categories, and live prices.',
+    body: 'The full tape: tokenized stocks, private assets, crypto and stablecoins, searchable and sortable, each priced live from the pool where it trades.',
   },
   {
     title: 'Understand',
     live: true,
-    body: 'Every instrument states what its price represents: proxy labels, provider, source timestamps, freshness. Kovra Agent turns the same data into plain-language context.',
+    body: 'Every price shows its provenance: the pool it came from, when it was struck, how fresh it is. Kovra Agent turns the same raw data into plain-language context.',
   },
   {
     title: 'Connect',
     live: true,
-    body: 'Connect an EVM wallet to open your Kovra dashboard. Connection is identity only today — Kovra holds no keys, signs nothing, and never asks for approvals.',
+    body: 'Connect an EVM wallet to open your dashboard. Connection proves identity only: Kovra never controls your wallet, never sends transactions, never asks for spending approval.',
   },
   {
     title: 'Access',
     live: false,
-    body: 'Tokenized exposure on Robinhood Chain: verified token contracts, liquidity, and transaction routes. Nothing becomes purchasable until each is verified and disclosed.',
+    body: 'Buy and sell tokenized assets on Robinhood Chain, once token contracts, pools and routes are verified. Nothing becomes purchasable until each is verified and disclosed.',
   },
   {
     title: 'Track',
     live: false,
-    body: 'Holdings, watchlists, and onchain activity in one surface — with the same sourcing discipline as the market data.',
+    body: 'Holdings, watchlists and onchain activity on one surface, held to the same sourcing discipline as every price on the site.',
   },
   {
     title: 'Where we are today',
     live: null,
-    body: 'Discover, Understand, and Connect are live on this site. Access and Track arrive with verified contracts — until then, every surface says so.',
+    body: 'Discover, Understand and Connect are live today. Access and Track arrive with verified contracts, and until then every surface says so.',
   },
 ];
 
@@ -62,9 +62,8 @@ export function HowItWorks() {
       </div>
       <Reveal>
         <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted">
-          Kovra intends to deploy on Robinhood Chain. No official partnership, verified asset
-          integration, or live investment product exists today, and ETF references do not imply Kovra
-          sells or tracks those funds as products.
+          Kovra plans to build on Robinhood Chain. There is no partnership with Robinhood today and
+          no investment product for sale; showing a token here is not an endorsement or an offer.
         </p>
       </Reveal>
     </section>

@@ -10,7 +10,7 @@ const TONES: Record<Tone, string> = {
   warn: 'border-line bg-accent-soft text-ink',
 };
 
-/** Small status chip. Never the only carrier of meaning — pair with text. */
+/** Small status chip. Never the only carrier of meaning, pair with text. */
 export function Chip({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
   return (
     <span

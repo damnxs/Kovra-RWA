@@ -7,8 +7,8 @@ export function Footer() {
         <div className="max-w-sm">
           <p className="font-serif text-2xl leading-none">kovra</p>
           <p className="mt-3 text-sm leading-relaxed text-muted">
-            Market discovery for tokenized exposure. Instruments shown are reference proxies, not
-            purchasable products.
+            Live price discovery for tokenized stocks and real-world assets on Robinhood Chain.
+            Everything here is research; nothing can be bought or sold through Kovra.
           </p>
         </div>
         <nav className="flex flex-col text-sm" aria-label="Footer">
@@ -21,35 +21,18 @@ export function Footer() {
           <Link to="/activity" className="flex min-h-11 items-center text-muted transition-colors hover:text-ink">
             Activity
           </Link>
-          <Link to="/#insights" className="flex min-h-11 items-center text-muted transition-colors hover:text-ink">
-            Insights
+          <Link to="/dashboard" className="flex min-h-11 items-center text-muted transition-colors hover:text-ink">
+            Portfolio
           </Link>
           <Link to="/docs" className="flex min-h-11 items-center text-muted transition-colors hover:text-ink">
-            Docs
+            Guide
           </Link>
-          <a
-            href="/docs/provider-assessment.md"
-            className="flex min-h-11 items-center text-muted transition-colors hover:text-ink"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Market data provider assessment
-          </a>
         </nav>
         <div className="text-sm text-muted lg:text-right">
-          <p>
-            Market data:{' '}
-            <a
-              href="https://finnhub.io"
-              className="underline decoration-line underline-offset-2 transition-colors hover:text-ink"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Finnhub
-            </a>
-          </p>
+          <p>Every number, read directly from Robinhood Chain</p>
           <p className="mt-2 max-w-xs lg:ml-auto">
-            Quotes may be delayed. Nothing here is investment advice or an offer of securities.
+            Prices are indicative onchain pool prices. Nothing here is investment advice or an offer
+            of securities.
           </p>
           <p className="mt-2">© {new Date().getFullYear()} Kovra</p>
         </div>
