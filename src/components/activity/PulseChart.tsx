@@ -83,16 +83,16 @@ export function PulseChart({ log, className = '' }: { log: ChainLogEntry[]; clas
                   String(v),
                   name === 'trades' ? 'Trades' : 'Transfers',
                 ]}
-                contentStyle={{ borderRadius: 6, border: '1px solid #e2e6dc', fontSize: 12 }}
+                contentStyle={{ borderRadius: 6, border: '1px solid #d2d1c9', fontSize: 12 }}
               />
               {/* No bar animation: the window re-buckets on every log tick
                   (~4/s with block headers), so animated bars would never stop
                   restarting and the chart looks like it is crawling. */}
-              <Bar dataKey="trades" stackId="pulse" fill="#ccff00" isAnimationActive={false} />
+              <Bar dataKey="trades" stackId="pulse" fill="#c8ff3d" isAnimationActive={false} />
               <Bar
                 dataKey="transfers"
                 stackId="pulse"
-                fill="#62685e"
+                fill="#6e6e65"
                 fillOpacity={0.55}
                 isAnimationActive={false}
               />

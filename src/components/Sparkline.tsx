@@ -23,7 +23,7 @@ export function Sparkline({ points }: { points?: HistoryPoint[] }) {
           <Line
             type="monotone"
             dataKey="p"
-            stroke="#62685e"
+            stroke="#6e6e65"
             strokeWidth={1.5}
             dot={false}
             isAnimationActive={false}

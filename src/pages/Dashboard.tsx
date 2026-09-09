@@ -1,14 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { LuArrowRight } from 'react-icons/lu';
 import { Pie, PieChart, Cell, ResponsiveContainer } from 'recharts';
-import { useWallet, chainName, shortAddress } from '../data/WalletProvider';
+import { useWallet } from '../data/WalletProvider';
 import { useMarket } from '../data/MarketProvider';
-import { useOnchainBalances, useOnchainFeed } from '../data/OnchainProvider';
+import { useOnchainBalances } from '../data/OnchainProvider';
 import { biggestMove } from '../lib/agent';
 import { Chip } from '../components/Chip';
 import { ConnectWalletButton } from '../components/ConnectWalletButton';
-import { RefreshStatus } from '../components/RefreshStatus';
 import { formatPct } from '../lib/format';
 
 /**
@@ -26,23 +25,12 @@ type Holding = {
   periodChangePct: number | null;
 };
 
-const MIX_NEUTRALS = ['#141713', '#62685e', '#a9aea4', '#c9cdc2', '#dfe3d8'];
+const MIX_NEUTRALS = ['#1d1d1d', '#6e6e65', '#a9a89e', '#c9c8bf', '#dedcd1'];
 
 export function Dashboard() {
-  const {
-    address,
-    chainId,
-    connecting,
-    disconnect,
-    error,
-    hasProvider,
-    onRobinhoodChain,
-    switchToRobinhoodChain,
-  } = useWallet();
+  const { address, connecting, error, hasProvider } = useWallet();
   const { instruments, quotes } = useMarket();
   const balances = useOnchainBalances(address);
-  const { connected: chainConnected } = useOnchainFeed();
-  const [copied, setCopied] = useState(false);
 
   const { holdings, loadingHoldings } = useMemo(() => {
     if (!balances.data) return { holdings: [] as Holding[], loadingHoldings: balances.loading };
@@ -97,76 +85,23 @@ export function Dashboard() {
     );
   }
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(address);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard unavailable, the full address is visible below anyway */
-    }
-  };
-
   const total = holdings.reduce((s, h) => s + h.valueUsd, 0);
   const mix = holdings.map((h, i) => ({
     name: h.category,
     value: h.valueUsd,
     // One highlighted segment (largest) in lime; the rest neutral.
-    color: i === 0 ? '#ccff00' : MIX_NEUTRALS[i % MIX_NEUTRALS.length]!,
+    color: i === 0 ? '#c8ff3d' : MIX_NEUTRALS[i % MIX_NEUTRALS.length]!,
   }));
   const move = biggestMove(quotes, instruments);
 
   return (
     <div className="fade-in mx-auto max-w-content px-5 py-10 sm:px-8 sm:py-14 lg:px-12">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="eyebrow">Connected account</p>
-          <h1 className="mt-3 font-serif text-[36px] leading-tight sm:text-[44px]">Portfolio.</h1>
-        </div>
-        <RefreshStatus />
+      <div>
+        <p className="eyebrow">Connected account</p>
+        <h1 className="mt-3 font-serif text-[36px] leading-tight sm:text-[44px]">Portfolio.</h1>
       </div>
 
-      {/* Identity and network, accurate, never a hardcoded "connected" claim. */}
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">
-        <span className="flex items-center gap-2">
-          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-positive" />
-          <span className="tabular-nums font-medium">{shortAddress(address)}</span>
-          <button
-            type="button"
-            onClick={copy}
-            className="rounded-control border border-line bg-surface px-2 py-1 text-xs font-medium transition-colors hover:border-ink"
-          >
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-          <button
-            type="button"
-            onClick={disconnect}
-            className="rounded-control border border-line bg-surface px-2 py-1 text-xs font-medium text-muted transition-colors hover:border-ink hover:text-ink"
-          >
-            Disconnect
-          </button>
-        </span>
-        <span className="text-muted">
-          Network:{' '}
-          <span className="font-medium text-ink">{chainName(chainId)}</span>{' '}
-          {onRobinhoodChain ? (
-            <Chip tone="positive">Robinhood Chain connected</Chip>
-          ) : (
-            <>
-              <Chip tone="warn">Not on Robinhood Chain</Chip>{' '}
-              <button
-                type="button"
-                onClick={() => void switchToRobinhoodChain()}
-                className="rounded-control border border-line bg-surface px-2 py-1 text-xs font-medium transition-colors hover:border-ink"
-              >
-                Switch network
-              </button>
-            </>
-          )}
-          {chainConnected === false && <Chip tone="warn">Chain connection down</Chip>}
-        </span>
-      </div>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+      <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted">
         Real balances of supported tokens, read live from Robinhood Chain and valued at current
         pool prices. Values refresh about once a minute. This is a read-only view of your wallet:
         nothing can be bought, sold or transferred through Kovra.
@@ -347,22 +282,6 @@ export function Dashboard() {
           </section>
         </div>
       </div>
-
-      {/* Short links only, the full watchlist and activity live on their own routes. */}
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          to="/watchlist"
-          className="inline-flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
-        >
-          View watchlist <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
-        </Link>
-        <Link
-          to="/activity"
-          className="inline-flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
-        >
-          View activity <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
-        </Link>
-      </div>
     </div>
   );
 }
@@ -390,8 +309,8 @@ function StatePanelConnect({ error, hasProvider }: { error: string | null; hasPr
       )}
       {!hasProvider && (
         <p className="mt-3 text-sm text-muted">
-          No wallet was detected in this browser. Install a crypto wallet such as MetaMask, or open
-          Kovra in your wallet&rsquo;s built-in browser.
+          No browser wallet detected. Any mobile wallet works: tap Connect wallet and pick yours
+          from the list.
         </p>
       )}
       <p className="mt-6 text-sm text-muted">

@@ -1,9 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useWallet, shortAddress } from '../data/WalletProvider';
 
 /**
  * Secondary nav action: outline "Connect wallet" when disconnected; the connected
- * state becomes an address chip linking to the dashboard. Routed on connect.
+ * state becomes an address chip that opens the Reown modal (account view, from
+ * which the wallet can be disconnected). Routed on connect.
  */
 export function ConnectWalletButton({ navigateOnConnect = true }: { navigateOnConnect?: boolean }) {
   const { address, connecting, connect } = useWallet();
@@ -11,14 +12,15 @@ export function ConnectWalletButton({ navigateOnConnect = true }: { navigateOnCo
 
   if (address) {
     return (
-      <Link
-        to="/dashboard"
+      <button
+        type="button"
+        onClick={connect}
         className="ml-2 flex h-11 items-center gap-2 rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink"
-        aria-label={`Open dashboard for ${shortAddress(address)}`}
+        aria-label={`Wallet options for ${shortAddress(address)}`}
       >
         <span aria-hidden="true" className="h-2 w-2 rounded-full bg-positive" />
         <span className="tabular-nums">{shortAddress(address)}</span>
-      </Link>
+      </button>
     );
   }
 
@@ -32,7 +34,7 @@ export function ConnectWalletButton({ navigateOnConnect = true }: { navigateOnCo
         if (navigateOnConnect) navigate('/dashboard');
         connect();
       }}
-      className="ml-2 flex h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium transition-colors hover:border-ink disabled:opacity-60"
+      className="ml-2 flex h-11 items-center rounded-control border border-line bg-surface px-4 text-[11px] font-medium uppercase tracking-[0.12em] transition-colors hover:border-ink disabled:opacity-60"
     >
       {connecting ? 'Connecting…' : 'Connect wallet'}
     </button>

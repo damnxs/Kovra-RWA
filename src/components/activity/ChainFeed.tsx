@@ -110,13 +110,9 @@ export function ChainFeed({ className = '' }: { className?: string }) {
             <p className="eyebrow text-right">Tx</p>
           </div>
           <ol className="max-h-[65vh] overflow-y-auto" aria-label="Live chain activity, newest first">
-            {items.map((item) =>
-              item.type === 'entry' ? (
-                <EntryRow key={item.entry.id} e={item.entry} fresh={freshIds.has(item.entry.id)} />
-              ) : (
-                <BlockDivider key={`blk-${item.block}`} block={item.block} span={item.span} />
-              ),
-            )}
+            {items.map((item) => (
+              <EntryRow key={item.entry.id} e={item.entry} fresh={freshIds.has(item.entry.id)} />
+            ))}
           </ol>
         </>
       )}
@@ -222,20 +218,6 @@ function EntryRow({ e, fresh = false }: { e: ChainLogEntry; fresh?: boolean }) {
         {tx && <div className="mt-0.5 sm:hidden">{tx}</div>}
       </div>
       <div className="hidden justify-self-end sm:block">{tx}</div>
-    </li>
-  );
-}
-
-/** A run of block headers, collapsed into one quiet ticker line. */
-function BlockDivider({ block, span }: { block: number; span: number }) {
-  return (
-    <li aria-hidden="true" className="fade-in flex items-center gap-3 px-4 py-2 sm:px-5">
-      <span className="h-px flex-1 bg-line" />
-      <span className="whitespace-nowrap text-xs tabular-nums text-muted">
-        Block {block.toLocaleString('en-US')}
-        {span >= 2 ? ` · ${span.toLocaleString('en-US')} blocks` : ''}
-      </span>
-      <span className="h-px flex-1 bg-line" />
     </li>
   );
 }

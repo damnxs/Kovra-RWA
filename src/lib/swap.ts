@@ -1,3 +1,5 @@
+import { injected } from '../data/WalletProvider';
+
 /**
  * Raw ABI encodings for the three calls real trading needs on Robinhood
  * Chain: ERC20 approve + allowance, Uniswap V3 QuoterV2 quoteExactInputSingle,
@@ -65,7 +67,7 @@ export function decodeUint(result: string): bigint {
 
 /** eth_call through the injected wallet, answered by the wallet's own RPC. */
 export function walletCall(to: string, data: string): Promise<string> {
-  return window.ethereum!.request({
+  return injected()!.request({
     method: 'eth_call',
     params: [{ from: undefined, to, data }, 'latest'],
   }) as Promise<string>;
@@ -73,7 +75,7 @@ export function walletCall(to: string, data: string): Promise<string> {
 
 /** eth_sendTransaction through the injected wallet; the wallet signs, not Kovra. */
 export function sendTx(from: string, to: string, data: string): Promise<string> {
-  return window.ethereum!.request({
+  return injected()!.request({
     method: 'eth_sendTransaction',
     params: [{ from, to, data, value: '0x0' }],
   }) as Promise<string>;
@@ -83,7 +85,7 @@ type Receipt = { status?: string } | null;
 
 /** Poll the receipt until the chain confirms, ~2s apart. Rejects after ~2 min. */
 export function waitForReceipt(hash: string): Promise<'success' | 'reverted'> {
-  const eth = window.ethereum!;
+  const eth = injected()!;
   return new Promise((resolve, reject) => {
     let tries = 0;
     const tick = async () => {

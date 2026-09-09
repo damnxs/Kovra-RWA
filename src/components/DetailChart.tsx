@@ -36,14 +36,14 @@ export function DetailChart({ points }: { points?: HistoryPoint[] }) {
               type="number"
               domain={['dataMin', 'dataMax']}
               tickFormatter={(t: number) => formatTime(new Date(t).toISOString())}
-              stroke="#62685e"
+              stroke="#6e6e65"
               fontSize={11}
               tickLine={false}
               minTickGap={48}
             />
             <YAxis
               domain={['auto', 'auto']}
-              stroke="#62685e"
+              stroke="#6e6e65"
               fontSize={11}
               tickLine={false}
               width={56}
@@ -54,14 +54,14 @@ export function DetailChart({ points }: { points?: HistoryPoint[] }) {
               formatter={(v: number | string) => [Number(v).toFixed(2), 'Price']}
               contentStyle={{
                 borderRadius: 6,
-                border: '1px solid #e2e6dc',
+                border: '1px solid #d2d1c9',
                 fontSize: 12,
               }}
             />
             <Line
               type="monotone"
               dataKey="p"
-              stroke="#141713"
+              stroke="#1d1d1d"
               strokeWidth={1.5}
               dot={false}
               isAnimationActive={false}

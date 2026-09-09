@@ -11,11 +11,11 @@ import type { ChainLogEntry, HistoryPoint } from '../types/quote';
  * are the CSS vars, hard-coded here so the shader-free materials match exactly.
  */
 
-const PAGE = '#fafbf7';
-const INK = '#141713';
-const MUTED = '#62685e';
-const LINE = '#e2e6dc';
-const LIME = '#ccff00';
+const PAGE = '#f5f3ea';
+const INK = '#1d1d1d';
+const MUTED = '#6e6e65';
+const LINE = '#d2d1c9'; // --line rgba(29,29,29,0.16) composited over the ivory page
+const LIME = '#c8ff3d';
 const POS = '#17763c';
 const NEG = '#b33d3d';
 
@@ -152,7 +152,7 @@ export function HeroScene({ series, className }: { series: HistoryPoint[]; class
       chipCanvas.height = h;
       ctx.font = '600 42px "Geist Sans", system-ui, sans-serif';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#fdfcf6';
       ctx.strokeStyle = LINE;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -198,7 +198,7 @@ export function HeroScene({ series, className }: { series: HistoryPoint[]; class
       const w = Math.ceil(pad * 2 + dotZone + Math.max(...lineWidths));
       canvas.width = w;
       canvas.height = h;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#fdfcf6';
       ctx.strokeStyle = LINE;
       ctx.lineWidth = 3;
       ctx.beginPath();

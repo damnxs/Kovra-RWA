@@ -225,7 +225,7 @@ export function Agent() {
                         key={q}
                         type="button"
                         onClick={() => void send(q)}
-                        className="fade-in rounded-full border border-line bg-surface px-3 py-1.5 text-left text-xs font-medium text-muted transition-colors duration-200 hover:border-ink hover:text-ink"
+                        className="fade-in rounded-control border border-line bg-surface px-3 py-1.5 text-left text-xs font-medium text-muted transition-colors duration-200 hover:border-ink hover:text-ink"
                       >
                         {q}
                       </button>
@@ -248,7 +248,7 @@ export function Agent() {
       <div ref={bottomRef} />
 
       <form
-        className="mb-10 rounded-2xl border border-line bg-surface p-4 shadow-sm"
+        className="mb-10 rounded-panel border border-line bg-surface p-4"
         onSubmit={(e) => {
           e.preventDefault();
           if (!canSend) return;
@@ -273,7 +273,7 @@ export function Agent() {
               type="submit"
               disabled={!canSend}
               aria-label="Send"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-ink transition-opacity duration-200 hover:opacity-85 disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-control bg-accent text-ink transition-opacity duration-200 hover:opacity-85 disabled:opacity-40"
             >
               <LuArrowRight aria-hidden="true" className="h-4 w-4" />
             </button>

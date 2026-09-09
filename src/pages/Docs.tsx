@@ -84,7 +84,7 @@ export function Docs() {
           <a
             key={s.id}
             href={`#${s.id}`}
-            className={`shrink-0 rounded-full border px-3.5 py-2 text-sm transition-colors ${
+            className={`shrink-0 rounded-control border px-3.5 py-2 text-sm transition-colors ${
               active === s.id
                 ? 'border-transparent bg-accent text-ink'
                 : 'border-line bg-surface text-muted hover:border-ink hover:text-ink'
@@ -178,10 +178,9 @@ export function Docs() {
           <Section n={5} id="portofolio" title="Portfolio">
             <p>
               After connecting, <strong className="font-medium text-ink">Portfolio</strong> is your
-              account overview: wallet identity with copy and disconnect, network status, and, once
-              verified balances exist, totals, change, allocation and portfolio mix. Until
-              then it shows an honest empty state instead of a fabricated $0 portfolio, plus quick
-              links to your watchlist and activity.
+              account overview: verified balances with totals, change, allocation and portfolio
+              mix. Until
+              then it shows an honest empty state instead of a fabricated $0 portfolio.
             </p>
           </Section>
 

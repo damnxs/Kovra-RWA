@@ -52,8 +52,8 @@ export function Hero() {
         <div className="pointer-events-auto max-w-2xl">
           <h1
             id="hero-heading"
-            className="font-serif font-light leading-[1.05] tracking-[-0.01em]"
-            style={{ fontSize: 'clamp(2.25rem, 4.6vw, 4.25rem)' }}
+            className="font-serif font-light leading-[0.95] tracking-[-0.02em]"
+            style={{ fontSize: 'clamp(3rem, 5.5vw, 5.5rem)' }}
           >
             Wall Street, settled onchain.
           </h1>
@@ -97,18 +97,19 @@ export function Hero() {
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center gap-5">
+          <div className="mt-10 flex flex-wrap items-center gap-6">
             <Link
               to="/markets"
-              className="flex h-11 items-center whitespace-nowrap rounded-control bg-accent px-5 text-[15px] font-semibold text-ink transition-transform hover:-translate-y-px"
+              className="flex h-11 items-center whitespace-nowrap rounded-control bg-accent px-6 text-xs font-semibold uppercase tracking-[0.12em] text-ink transition-opacity hover:opacity-90"
             >
               Explore markets
+              <LuArrowRight aria-hidden="true" className="ml-2 h-3.5 w-3.5" />
             </Link>
             <Link
               to="/docs"
-              className="inline-flex items-center gap-1.5 whitespace-nowrap text-[15px] font-medium text-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-[0.12em] text-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
             >
-              How it works <LuArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
+              How it works
             </Link>
           </div>
         </div>
